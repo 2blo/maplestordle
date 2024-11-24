@@ -39,7 +39,7 @@ export const env = createEnv({
     AUTH_SECRET: process.env.AUTH_SECRET,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
-    DATABASE_HOST: process.env.DATABASE_URL,
+    DATABASE_HOST: process.env.DATABASE_HOST,
     ADMIN_DATABASE: process.env.ADMIN_DATABASE,
     DATABASE: process.env.DATABASE,
     DATABASE_SCHEMA: process.env.DATABASE_SCHEMA,
