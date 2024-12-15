@@ -5,8 +5,12 @@ import {
   primaryKey,
   text,
   timestamp,
+  customType,
   varchar,
-  pgSchema
+  pgSchema,
+  boolean,
+  numeric,
+  decimal,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 import { env } from "~/env";
@@ -18,7 +22,14 @@ import { env } from "~/env";
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
 
+const bytea = customType<{ data: Buffer; notNull: false; default: false }>({
+  dataType() {
+    return "bytea";
+  },
+});
+
 const schema = pgSchema(env.DATABASE_SCHEMA);
+const game_schema = pgSchema(env.GAME_DATABASE_SCHEMA);
 
 const tableWithPrefix = (name: string) => `ms_${name}`;
 
@@ -34,13 +45,13 @@ export const posts = schema.table(
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date()
+      () => new Date(),
     ),
   },
-  (example) => ({
-    createdByIdIdx: index("created_by_idx").on(example.createdById),
-    nameIndex: index("name_idx").on(example.name),
-  })
+  (example) => [
+    index("created_by_idx").on(example.createdById),
+    index("name_idx").on(example.name),
+  ],
 );
 
 export const users = schema.table(tableWithPrefix("user"), {
@@ -82,12 +93,12 @@ export const accounts = schema.table(
     id_token: text("id_token"),
     session_state: varchar("session_state", { length: 255 }),
   },
-  (account) => ({
-    compoundKey: primaryKey({
+  (account) => [
+    primaryKey({
       columns: [account.provider, account.providerAccountId],
     }),
-    userIdIdx: index("account_user_id_idx").on(account.userId),
-  })
+    index("account_user_id_idx").on(account.userId),
+  ],
 );
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -108,9 +119,7 @@ export const sessions = schema.table(
       withTimezone: true,
     }).notNull(),
   },
-  (session) => ({
-    userIdIdx: index("session_user_id_idx").on(session.userId),
-  })
+  (session) => [index("session_user_id_idx").on(session.userId)],
 );
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -127,7 +136,29 @@ export const verificationTokens = schema.table(
       withTimezone: true,
     }).notNull(),
   },
-  (vt) => ({
-    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
-  })
+  (vt) => [primaryKey({ columns: [vt.identifier, vt.token] })],
+);
+
+export const mob = game_schema.table(
+  tableWithPrefix("mob"),
+  {
+    id: integer("id").primaryKey().notNull(),
+    name: varchar("name", { length: 255 }).notNull(),
+    level: integer("level").notNull(),
+    is_boss: boolean("is_boss").notNull(),
+    width: integer("width").notNull(),
+    height: integer("height").notNull(),
+    icon: bytea("icon").notNull(),
+  },
+  (mob) => [index("mob_name_idx").on(mob.name)],
+);
+
+export const mobColors = game_schema.table(
+  tableWithPrefix("mob_color"),
+  {
+    mobId: integer("mob_id").notNull().references(() => mob.id),
+    color: varchar("color", { length: 255 }).notNull(),
+    ratio: decimal("ratio", { precision: 4}).notNull(),
+  },
+  (mobColor) => [index("mob_color_mob_id_idx").on(mobColor.mobId)],
 );

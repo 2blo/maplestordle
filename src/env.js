@@ -17,6 +17,7 @@ export const env = createEnv({
     ADMIN_DATABASE: z.string(),
     DATABASE: z.string(),
     DATABASE_SCHEMA: z.string(),
+    GAME_DATABASE_SCHEMA: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -43,6 +44,7 @@ export const env = createEnv({
     ADMIN_DATABASE: process.env.ADMIN_DATABASE,
     DATABASE: process.env.DATABASE,
     DATABASE_SCHEMA: process.env.DATABASE_SCHEMA,
+    GAME_DATABASE_SCHEMA: process.env.GAME_DATABASE_SCHEMA,
     NODE_ENV: process.env.NODE_ENV,
   },
   /**
