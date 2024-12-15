@@ -9,7 +9,6 @@ import {
   varchar,
   pgSchema,
   boolean,
-  numeric,
   decimal,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
@@ -39,7 +38,6 @@ export const posts = schema.table(
     id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
     name: varchar("name", { length: 256 }),
     createdById: varchar("created_by", { length: 255 })
-    
       .notNull()
       .references(() => users.id),
     createdAt: timestamp("created_at", { withTimezone: true })
