@@ -84,7 +84,7 @@ export async function MobGame() {
     <div>
       <h1>ASDASD</h1>
       <h1>{mobs.map((mob) => mob.name).join(", ")}</h1>
-      <MobGameInput frameworks={frameworks} />;
+      {/* <MobGameInput frameworks={frameworks} />; */}
     </div>
   );
 }
