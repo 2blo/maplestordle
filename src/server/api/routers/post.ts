@@ -4,6 +4,7 @@ import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
+  createCallerFactory,
 } from "~/server/api/trpc";
 import { posts } from "~/server/db/schema";
 
