@@ -39,6 +39,7 @@ export const posts = schema.table(
     id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
     name: varchar("name", { length: 256 }),
     createdById: varchar("created_by", { length: 255 })
+    
       .notNull()
       .references(() => users.id),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -156,9 +157,11 @@ export const mob = game_schema.table(
 export const mobColors = game_schema.table(
   tableWithPrefix("mob_color"),
   {
-    mobId: integer("mob_id").notNull().references(() => mob.id),
+    mobId: integer("mob_id")
+      .notNull()
+      .references(() => mob.id),
     color: varchar("color", { length: 255 }).notNull(),
-    ratio: decimal("ratio", { precision: 4}).notNull(),
+    ratio: decimal("ratio", { precision: 4 }).notNull(),
   },
   (mobColor) => [index("mob_color_mob_id_idx").on(mobColor.mobId)],
 );
