@@ -6,6 +6,7 @@ import { GetStaticProps } from "next";
 // import { appRouter } from "~/server/api/root";
 import { mob } from "~/server/db/schema";
 import { db } from "~/server/db";
+import { unstable_cache } from "next/cache";
 
 import { MobGameInput } from "./mob-game-input";
 
@@ -77,18 +78,16 @@ type Mob = {
   name: string;
 };
 
-export async function Names() {
-  "use cache";
+const mobNames = unstable_cache(async () => {
   const mobs = await db.select({ name: mob.name }).from(mob);
   console.log("fetched mobs", mobs);
-  return <h1>{mobs.map((mob) => mob.name).join(", ")}</h1>;
-}
+  return mobs;
+}, ["mob-names"]);
 
 export async function MobGame() {
   return (
     <div>
-      <Names />
-      <h1>ASDASD</h1>
+      <h1>{(await mobNames()).map((mob) => mob.name).join(", ")}</h1>
       {/* <MobGameInput frameworks={frameworks} />; */}
     </div>
   );

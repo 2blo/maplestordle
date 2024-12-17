@@ -5,10 +5,6 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {
-    experimental: {
-        dynamicIO: true
-    },
-};
+const config = {};
 
 export default config;
