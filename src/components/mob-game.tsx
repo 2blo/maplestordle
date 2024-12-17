@@ -1,14 +1,9 @@
 // import { api, HydrateClient } from "~/trpc/server";
 // import { createServerSideHelpers } from "@trpc/react-query/server";
-import {
-  GetStaticPaths,
-  GetStaticPropsContext,
-  InferGetStaticPropsType,
-} from "next";
+
 import { GetStaticProps } from "next";
 // import { headers } from "next/headers";
 // import { appRouter } from "~/server/api/root";
-import SuperJSON from "superjson";
 import { mob } from "~/server/db/schema";
 import { db } from "~/server/db";
 
@@ -82,22 +77,18 @@ type Mob = {
   name: string;
 };
 
-export const getStaticProps = (async (context) => {
+export async function Names() {
+  "use cache";
   const mobs = await db.select({ name: mob.name }).from(mob);
   console.log("fetched mobs", mobs);
-  return { props: { mobs } };
-}) satisfies GetStaticProps<{
-  mobs: Mob[];
-}>;
+  return <h1>{mobs.map((mob) => mob.name).join(", ")}</h1>;
+}
 
-export async function MobGame({
-  mobs,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
-  console.log("got mobs", mobs);
+export async function MobGame() {
   return (
     <div>
+      <Names />
       <h1>ASDASD</h1>
-      <h1>{mobs.map((mob) => mob.name).join(", ")}</h1>
       {/* <MobGameInput frameworks={frameworks} />; */}
     </div>
   );
