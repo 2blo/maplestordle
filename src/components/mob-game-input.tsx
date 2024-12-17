@@ -3,10 +3,7 @@ import { Button } from "~/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { GetStaticProps } from "next";
-import { api } from "~/trpc/react";
 
-import { InferGetStaticPropsType } from "next";
 import {
   Command,
   CommandEmpty,
@@ -21,38 +18,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-type Framework = {
-  value: string;
-  label: string;
-};
-
-const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-];
-
-export function MobGameInput(props: { frameworks: Framework[] }) {
+export function MobGameInput(props: { mobs: { name: string }[] }) {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
-  const frameworks = props.frameworks
   return (
     <div>
       <h1>Mob Game</h1>
@@ -65,21 +33,21 @@ export function MobGameInput(props: { frameworks: Framework[] }) {
             className="w-[200px] justify-between"
           >
             {value
-              ? frameworks.find((framework) => framework.value === value)?.label
-              : "Select framework..."}
+              ? props.mobs.find((mob) => mob.name === value)?.name
+              : "Select Mob..."}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
-            <CommandInput placeholder="Search framework..." />
+            <CommandInput placeholder="Search Mob..." />
             <CommandList>
-              <CommandEmpty>No framework found.</CommandEmpty>
+              <CommandEmpty>No Mob found.</CommandEmpty>
               <CommandGroup>
-                {frameworks.map((framework) => (
+                {props.mobs.map((mob) => (
                   <CommandItem
-                    key={framework.value}
-                    value={framework.value}
+                    key={mob.name}
+                    value={mob.name}
                     onSelect={(currentValue) => {
                       setValue(currentValue === value ? "" : currentValue);
                       setOpen(false);
@@ -88,10 +56,10 @@ export function MobGameInput(props: { frameworks: Framework[] }) {
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        value === framework.value ? "opacity-100" : "opacity-0",
+                        value === mob.name ? "opacity-100" : "opacity-0",
                       )}
                     />
-                    {framework.label}
+                    {mob.name}
                   </CommandItem>
                 ))}
               </CommandGroup>
