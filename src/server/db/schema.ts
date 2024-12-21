@@ -152,7 +152,7 @@ export const mob = game_schema.table(
   (mob) => [index("mob_name_idx").on(mob.name)],
 );
 
-export const mobColors = game_schema.table(
+export const mobColor = game_schema.table(
   tableWithPrefix("mob_color"),
   {
     mobId: integer("mob_id")

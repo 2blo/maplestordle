@@ -11,10 +11,6 @@ const mobNames = unstable_cache(async () => {
 }, ["mob-names"]);
 
 export async function MobGame() {
-  const mobb = await db.select().from(mob).limit(1);
-  // .where(eq(mob.id, 9400765))
-  // .where(eq(mob.id, input.id))
-
   return (
     <div>
       <MobGameInput mobs={await mobNames()} />

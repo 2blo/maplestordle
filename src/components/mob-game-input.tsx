@@ -18,8 +18,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { mob } from "~/server/db/schema";
-import { set } from "zod";
 
 export function MobGameInput(props: { mobs: { id: number; name: string }[] }) {
   const [open, setOpen] = useState(false);
@@ -34,7 +32,6 @@ export function MobGameInput(props: { mobs: { id: number; name: string }[] }) {
       ))}
 
       <text>{mob?.name}</text>
-      <text>{mobs}</text>
       <text> {mob?.id}</text>
       <Button
         variant={mob ? "default" : "ghost"}
