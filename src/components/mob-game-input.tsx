@@ -18,20 +18,35 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { mob } from "~/server/db/schema";
+import { set } from "zod";
 
 export function MobGameInput(props: { mobs: { id: number; name: string }[] }) {
   const [open, setOpen] = useState(false);
-  const [mobName, setMobName] = useState("");
-  const [mobId, setMobId] = useState("");
+  const [mob, setMob] = useState<{ id: number; name: string } | undefined>();
+  const [mobs, setMobs] = useState<number[]>([]);
   console.log(open);
   return (
     <div>
       <h1>Mob Game</h1>
-      {false ? <text>a</text> : <text>b</text>}
-      {/* <MobGuess mob={mob} /> */}
-      <MobGuess id={9400765} />
-      <text>{mobName}</text>
-      <text> {mobId}</text>
+      {mobs.map((mob) => (
+        <MobGuess id={mob} key={mob} />
+      ))}
+
+      <text>{mob?.name}</text>
+      <text>{mobs}</text>
+      <text> {mob?.id}</text>
+      <Button
+        variant={mob ? "default" : "ghost"}
+        onClick={() => {
+          if (mob) {
+            setMobs((mobs) => [...mobs, mob.id]);
+            setMob(undefined);
+          }
+        }}
+      >
+        Go!
+      </Button>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -40,8 +55,8 @@ export function MobGameInput(props: { mobs: { id: number; name: string }[] }) {
             aria-expanded={open}
             className="w-[200px] justify-between"
           >
-            {mobName
-              ? props.mobs.find((mob) => mob.name === mobName)?.name
+            {mob?.name
+              ? props.mobs.find((mobItem) => mobItem.name === mob?.name)?.name
               : "Select Mob..."}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -52,23 +67,28 @@ export function MobGameInput(props: { mobs: { id: number; name: string }[] }) {
             <CommandList>
               <CommandEmpty>No Mob found.</CommandEmpty>
               <CommandGroup>
-                {props.mobs.map((mob) => (
+                {props.mobs.map((mobItem) => (
                   <CommandItem
-                    key={mob.id}
-                    value={mob.name}
+                    key={mobItem.id}
+                    value={mobItem.name}
                     onSelect={(currentValue) => {
-                      setMobName(currentValue === mobName ? "" : currentValue);
-                      setMobId(currentValue === mobName ? "" : mob.id.toString());
+                      setMob(
+                        currentValue === mob?.name
+                          ? undefined
+                          : { id: mobItem.id, name: currentValue },
+                      );
                       setOpen(false);
                     }}
                   >
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        mobName === mob.name ? "opacity-100" : "opacity-0",
+                        mob?.name === mobItem.name
+                          ? "opacity-100"
+                          : "opacity-0",
                       )}
                     />
-                    {mob.name}
+                    {mobItem.name}
                   </CommandItem>
                 ))}
               </CommandGroup>

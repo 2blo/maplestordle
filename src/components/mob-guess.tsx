@@ -9,10 +9,10 @@ export default function MobGuess(props: { id: number }) {
     <div className="">
       {mob ? (
         <div>
-          <text>
+          <h2>
             name: {mob.name} level: {mob.level} width: {mob.width} height:{" "}
             {mob.height} is_boss: {mob.is_boss ? "true" : "false"}
-          </text>
+          </h2>
           <Image
             src={`data:image/png;base64,${mob.icon}`}
             width={100}
