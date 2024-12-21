@@ -5,12 +5,16 @@ import { unstable_cache } from "next/cache";
 import { MobGameInput } from "./mob-game-input";
 
 const mobNames = unstable_cache(async () => {
-  const mobs = await db.select({ name: mob.name }).from(mob);
+  const mobs = await db.select({ id: mob.id, name: mob.name }).from(mob);
   console.log("fetched mobs", mobs);
   return mobs;
 }, ["mob-names"]);
 
 export async function MobGame() {
+  const mobb = await db.select().from(mob).limit(1);
+  // .where(eq(mob.id, 9400765))
+  // .where(eq(mob.id, input.id))
+
   return (
     <div>
       <MobGameInput mobs={await mobNames()} />
