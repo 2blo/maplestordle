@@ -9,7 +9,7 @@ import {
   varchar,
   pgSchema,
   boolean,
-  decimal,
+  real,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 import { env } from "~/env";
@@ -159,7 +159,7 @@ export const mobColor = game_schema.table(
       .notNull()
       .references(() => mob.id),
     color: varchar("color", { length: 255 }).notNull(),
-    ratio: decimal("ratio", { precision: 4 }).notNull(),
+    ratio: real("ratio").notNull(),
   },
   (mobColor) => [index("mob_color_mob_id_idx").on(mobColor.mobId)],
 );

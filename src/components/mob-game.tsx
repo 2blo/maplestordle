@@ -8,7 +8,7 @@ const mobNames = unstable_cache(async () => {
   const mobs = await db.select({ id: mob.id, name: mob.name }).from(mob);
   console.log("fetched mobs", mobs);
   return mobs;
-}, ["mob-names"]);
+}, ["mob-names2"]);
 
 export async function MobGame() {
   return (

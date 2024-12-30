@@ -1,26 +1,49 @@
-"use client";
 import Image from "next/image";
 import { api } from "~/trpc/react";
+import { Box } from "./ui/box";
 
 export default function MobGuess(props: { id: number }) {
-  const [mob] = api.mob.byId.useSuspenseQuery({ id: props.id });
-  console.log(mob);
-
+  const [guess] = api.mob.guessById.useSuspenseQuery({ id: props.id });
   return (
     <div className="">
-      {mob ? (
-        <div>
-          <h2>
-            name: {mob.name} level: {mob.level} width: {mob.width} height:{" "}
-            {mob.height} is_boss: {mob.is_boss ? "true" : "false"} color1:{" "}
-            {mob.color1} color2: {mob.color2}
-          </h2>
-          <Image
-            src={`data:image/png;base64,${mob.icon}`}
-            width={100}
-            height={100}
-            alt="mob icon"
-          />
+      {guess ? (
+        <div className="flex flex-row justify-end gap-4">
+          <div className="flex flex-col justify-end">
+            <Image
+              src={`data:image/png;base64,${guess.mob.icon}`}
+              width={guess.mob.width}
+              height={guess.mob.height}
+              alt="mob icon"
+              style={{ imageRendering: "pixelated" }}
+              className=""
+            />
+          </div>
+          <div className="flex flex-row items-end gap-4">
+            <Box
+              variant={guess.grade.is_boss}
+              text={guess.mob.is_boss ? "yes" : "no"}
+            ></Box>
+            <Box
+              variant={guess.grade.color}
+              text={
+                guess.mob.color1 +
+                (guess.mob.color2 ? ", " + guess.mob.color2 : "")
+              }
+            ></Box>
+            <Box
+              variant={guess.grade.level}
+              text={guess.mob.level.toString()}
+            ></Box>
+            <Box
+              variant={guess.grade.width}
+              text={guess.mob.width.toString()}
+            ></Box>
+            <Box
+              variant={guess.grade.height}
+              text={guess.mob.height.toString()}
+            ></Box>
+            <Box variant={guess.grade.name} text={guess.mob.name}></Box>
+          </div>
         </div>
       ) : (
         <text>Mob not found</text>

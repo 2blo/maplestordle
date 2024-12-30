@@ -1,5 +1,5 @@
 {
-  "id": "6fec85ef-b7a4-4682-89db-d0babd731dcc",
+  "id": "dddc0623-9cce-453e-9714-887814e09a04",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -211,7 +211,7 @@
         },
         "ratio": {
           "name": "ratio",
-          "type": "numeric(4)",
+          "type": "real",
           "primaryKey": false,
           "notNull": true
         }
