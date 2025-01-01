@@ -24,11 +24,12 @@ export default function MobGuess(props: { id: number }) {
               text={guess.mob.is_boss ? "yes" : "no"}
             ></Box>
             <Box
+              variant={guess.grade.is_boss}
+              text={Array.from(guess.mob.mapMarks).join(", ")}
+            ></Box>
+            <Box
               variant={guess.grade.color}
-              text={
-                guess.mob.color1 +
-                (guess.mob.color2 ? ", " + guess.mob.color2 : "")
-              }
+              text={Array.from(guess.mob.colors).join(", ")}
             ></Box>
             <Box
               variant={guess.grade.level}

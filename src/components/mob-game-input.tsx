@@ -91,6 +91,7 @@ export function MobGameInput(props: { mobs: { id: number; name: string }[] }) {
       </div>
       <div className="flex flex-row justify-end gap-4">
         <div className="w-32 p-4 text-center">Boss</div>
+        <div className="w-32 p-4 text-center">Map</div>
         <div className="w-32 p-4 text-center">Color</div>
         <div className="w-32 p-4 text-center">Level</div>
         <div className="w-32 p-4 text-center">Width</div>
