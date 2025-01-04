@@ -119,7 +119,11 @@ const getMapMarks = () => {
       })
       .from(mapMark)
       .execute();
-    return new Map(mapMarks.map((mapMark_) => [mapMark_.name, mapMark_.icon]));
+    const map = new Map(
+      mapMarks.map((mapMark_) => [mapMark_.name, mapMark_.icon]),
+    );
+    console.log("fetched map marks", mapMarks.keys());
+    return map;
     // }, [Date.now().toString()]);
   }, ["map-marks"]);
 };
