@@ -170,7 +170,9 @@ export const map = game_schema.table(
     id: integer("id").primaryKey().notNull(),
     name: varchar("name"),
     streetName: varchar("street_name"),
-    mapMark: varchar("map_mark").notNull(),
+    mapMark: varchar("map_mark")
+      .notNull()
+      .references(() => mapMark.name),
     returnMapId: integer("return_map_id").notNull(),
     backgroundMusic: varchar("background_music").notNull(),
   },

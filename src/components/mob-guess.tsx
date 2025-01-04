@@ -25,7 +25,7 @@ export default function MobGuess(props: { id: number }) {
             ></Box>
             <Box
               variant={guess.grade.mapMark}
-              mapMarks={guess.mob.mapMarks}
+              mapmarks={guess.mob.mapMarks}
             ></Box>
             <Box
               variant={guess.grade.color}

@@ -32,29 +32,29 @@ export interface BoxProps
     VariantProps<typeof boxVariants> {
   asChild?: boolean;
   text?: string;
-  mapMarks?: { name: string; icon: string }[];
+  mapmarks?: { name: string; icon: string }[];
 }
 
 function gridSpan(nIcons: number, index: number) {
   if (nIcons === 1) {
-    return 6;
+    return "col-span-6";
   }
   if (nIcons === 2) {
-    return 3;
+    return "col-span-3";
   }
   if (nIcons === 3) {
-    return 2;
+    return "col-span-2";
   }
   if (nIcons === 4) {
-    return 3;
+    return "col-span-2";
   }
   if (nIcons === 5) {
     if (index < 3) {
-      return 2;
+      return "col-span-2";
     }
-    return 3;
+    return "col-span-3";
   }
-  return 2;
+  return "col-span-2";
 }
 
 const Box = React.forwardRef<HTMLDivElement, BoxProps>(
@@ -79,11 +79,11 @@ const Box = React.forwardRef<HTMLDivElement, BoxProps>(
             <X />
           )}
           {props.text ? props.text : ""}
-          <div className="grid grid-cols-6 justify-items-center gap-1 bg-blue-500">
-            {props.mapMarks?.map((mapMark, index) => (
+          <div className="grid grid-cols-6 justify-items-center gap-1">
+            {props.mapmarks?.map((mapMark, index) => (
               <div
                 key={index}
-                className={`flex flex-row col-span-${gridSpan(props.mapMarks?.length ?? 0, index)} bg-yellow-500`}
+                className={`flex flex-row ${gridSpan(props.mapmarks?.length ?? 0, index)}`}
               >
                 <TooltipProvider delayDuration={0}>
                   <Tooltip>
