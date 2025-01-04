@@ -9,7 +9,7 @@ import {
   varchar,
   pgSchema,
   boolean,
-  decimal,
+  real,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 import { env } from "~/env";
@@ -149,17 +149,54 @@ export const mob = game_schema.table(
     height: integer("height").notNull(),
     icon: bytea("icon").notNull(),
   },
-  (mob) => [index("mob_name_idx").on(mob.name)],
+  (mob) => [index("mob_id_idx").on(mob.id)],
 );
 
-export const mobColors = game_schema.table(
+export const mobColor = game_schema.table(
   tableWithPrefix("mob_color"),
   {
     mobId: integer("mob_id")
       .notNull()
       .references(() => mob.id),
     color: varchar("color", { length: 255 }).notNull(),
-    ratio: decimal("ratio", { precision: 4 }).notNull(),
+    ratio: real("ratio").notNull(),
   },
   (mobColor) => [index("mob_color_mob_id_idx").on(mobColor.mobId)],
+);
+
+export const map = game_schema.table(
+  tableWithPrefix("map"),
+  {
+    id: integer("id").primaryKey().notNull(),
+    name: varchar("name"),
+    streetName: varchar("street_name"),
+    mapMark: varchar("map_mark")
+      .notNull()
+      .references(() => mapMark.name),
+    returnMapId: integer("return_map_id").notNull(),
+    backgroundMusic: varchar("background_music").notNull(),
+  },
+  (map) => [index("map_details_id_idx").on(map.id)],
+);
+
+export const mobMap = game_schema.table(
+  tableWithPrefix("mob_map"),
+  {
+    mobId: integer("mob_id")
+      .notNull()
+      .references(() => mob.id),
+    mapId: integer("map_id")
+      .notNull()
+      .references(() => map.id),
+  },
+  (mobMap) => [index("mob_map_mob_id_idx").on(mobMap.mobId)],
+);
+
+export const mapMark = game_schema.table(
+  tableWithPrefix("map_mark"),
+  {
+    name: varchar("name").notNull(),
+    icon: bytea("icon").notNull(),
+  },
+  (mapMark) => [index("map_mark_id_idx").on(mapMark.name)],
 );

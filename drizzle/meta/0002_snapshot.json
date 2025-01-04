@@ -1,6 +1,6 @@
 {
-  "id": "dddc0623-9cce-453e-9714-887814e09a04",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "c6364d18-5720-47a0-9434-ea4a3d896b61",
+  "prevId": "cab56333-572e-4924-817e-6958b99c652a",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -122,6 +122,112 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "game.ms_map": {
+      "name": "ms_map",
+      "schema": "game",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "street_name": {
+          "name": "street_name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "map_mark": {
+          "name": "map_mark",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "return_map_id": {
+          "name": "return_map_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "background_music": {
+          "name": "background_music",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "map_details_id_idx": {
+          "name": "map_details_id_idx",
+          "columns": [
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "game.ms_map_mark": {
+      "name": "ms_map_mark",
+      "schema": "game",
+      "columns": {
+        "name": {
+          "name": "name",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon": {
+          "name": "icon",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "map_mark_id_idx": {
+          "name": "map_mark_id_idx",
+          "columns": [
+            {
+              "expression": "name",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "game.ms_mob": {
       "name": "ms_mob",
       "schema": "game",
@@ -170,11 +276,11 @@
         }
       },
       "indexes": {
-        "mob_name_idx": {
-          "name": "mob_name_idx",
+        "mob_id_idx": {
+          "name": "mob_id_idx",
           "columns": [
             {
-              "expression": "name",
+              "expression": "id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -241,6 +347,76 @@
           "schemaTo": "game",
           "columnsFrom": [
             "mob_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "game.ms_mob_map": {
+      "name": "ms_mob_map",
+      "schema": "game",
+      "columns": {
+        "mob_id": {
+          "name": "mob_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "map_id": {
+          "name": "map_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "mob_map_mob_id_idx": {
+          "name": "mob_map_mob_id_idx",
+          "columns": [
+            {
+              "expression": "mob_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "ms_mob_map_mob_id_ms_mob_id_fk": {
+          "name": "ms_mob_map_mob_id_ms_mob_id_fk",
+          "tableFrom": "ms_mob_map",
+          "tableTo": "ms_mob",
+          "schemaTo": "game",
+          "columnsFrom": [
+            "mob_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ms_mob_map_map_id_ms_map_id_fk": {
+          "name": "ms_mob_map_map_id_ms_map_id_fk",
+          "tableFrom": "ms_mob_map",
+          "tableTo": "ms_map",
+          "schemaTo": "game",
+          "columnsFrom": [
+            "map_id"
           ],
           "columnsTo": [
             "id"

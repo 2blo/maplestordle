@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS "game"."ms_mob" (
 CREATE TABLE IF NOT EXISTS "game"."ms_mob_color" (
 	"mob_id" integer NOT NULL,
 	"color" varchar(255) NOT NULL,
-	"ratio" numeric(4) NOT NULL
+	"ratio" real NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "operations"."ms_post" (
