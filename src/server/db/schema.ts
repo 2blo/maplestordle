@@ -189,3 +189,12 @@ export const mobMap = game_schema.table(
   },
   (mobMap) => [index("mob_map_mob_id_idx").on(mobMap.mobId)],
 );
+
+export const mapMark = game_schema.table(
+  tableWithPrefix("map_mark"),
+  {
+    name: varchar("name").notNull(),
+    icon: bytea("icon").notNull(),
+  },
+  (mapMark) => [index("map_mark_id_idx").on(mapMark.name)],
+);

@@ -15,6 +15,13 @@
       "when": 1735743198470,
       "tag": "0001_uneven_swarm",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1735941600238,
+      "tag": "0002_thick_scalphunter",
+      "breakpoints": true
     }
   ]
 }

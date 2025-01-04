@@ -1,7 +1,7 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { publicProcedure } from "~/server/api/trpc";
 import z from "zod";
-import { mob, mobColor, map, mobMap } from "~/server/db/schema";
+import { mob, mobColor, map, mobMap, mapMark } from "~/server/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { db } from "~/server/db";
@@ -10,7 +10,7 @@ import { setEquals, setIntersection } from "~/lib/utils";
 const getTargetMob = (currentDay: number) => {
   return unstable_cache(async () => {
     const date = Date.now();
-    console.log("fetched date", date);
+    console.log("fetched date", date, currentDay);
     const id = 3110100;
     const targetMob = await db
       .select({
@@ -33,7 +33,6 @@ const getTargetMob = (currentDay: number) => {
     if (!targetMob[0]) {
       return undefined;
     }
-    console.log("targetMob1", targetMob);
     return {
       name: targetMob[0].name,
       level: targetMob[0].level,
@@ -43,21 +42,37 @@ const getTargetMob = (currentDay: number) => {
       colors: new Set(targetMob[0].colors),
       mapMarks: new Set(targetMob[0].mapMarks),
     };
-  // }, [Date.now().toString()]);
-  }, ["date", currentDay.toString()]);
+  }, [Date.now().toString()]);
+  // }, ["date", currentDay.toString()]);
+};
+
+const getMapMarks = () => {
+  return unstable_cache(async () => {
+    const mapMarks = await db
+      .select({
+        name: mapMark.name,
+        icon: mapMark.icon,
+      })
+      .from(mapMark)
+      .execute();
+    return new Map(mapMarks.map((mapMark_) => [mapMark_.name, mapMark_.icon]));
+  }, [Date.now().toString()]);
+  // }, ["map-marks"]);
 };
 
 export const mobRouter = createTRPCRouter({
   guessById: publicProcedure
     .input(z.object({ id: z.number().int() }))
     .query(async ({ ctx, input }) => {
+      console.log("input", input);
       const minutesSinceEpoch = Math.floor(Date.now() / (1000 * 60));
       const targetMob = await getTargetMob(minutesSinceEpoch)();
+      console.log("targetMob", targetMob);
+      const mapMarks = await getMapMarks()();
 
       if (!targetMob) {
         return undefined;
       }
-      console.log("input", input);
 
       const mobs = await ctx.db
         .select({
@@ -67,8 +82,8 @@ export const mobRouter = createTRPCRouter({
           width: sql<number>`min(${mob.width})`,
           height: sql<number>`min(${mob.height})`,
           is_boss: sql<boolean>`bool_and(${mob.is_boss})`,
-          colors: sql<string[]>`array_agg(${mobColor.color})`,
-          mapMarks: sql<string[]>`array_agg(${map.mapMark})`,
+          colors: sql<string[]>`array_agg(distinct ${mobColor.color})`,
+          mapMarks: sql<string[]>`array_agg(distinct ${map.mapMark})`,
           icon: sql<Buffer>`(array_agg(${mob.icon}))[1]`,
         })
         .from(mob)
@@ -90,11 +105,23 @@ export const mobRouter = createTRPCRouter({
         height: mobs[0].height,
         is_boss: mobs[0].is_boss,
         colors: new Set(mobs[0].colors),
-        mapMarks: new Set(mobs[0].mapMarks),
+        mapMarks: mobs[0].mapMarks
+          .map((name) => ({
+            name: name,
+            icon: btoa(String.fromCharCode(...(mapMarks.get(name) ?? []))),
+          }))
+          .filter((mapMark) => mapMark.icon),
         icon: btoa(String.fromCharCode(...mobs[0].icon)),
       };
-      console.log("targetMob", targetMob);
-      console.log("selected mob", selectedMob);
+      console.log("selected mob", {
+        name: selectedMob.name,
+        level: selectedMob.level,
+        width: selectedMob.width,
+        height: selectedMob.height,
+        is_boss: selectedMob.is_boss,
+        colors: selectedMob.colors,
+        mapMarks: selectedMob.mapMarks.map((mapMark) => mapMark.name),
+      });
 
       const grades = {
         correct: "correct",
@@ -137,9 +164,17 @@ export const mobRouter = createTRPCRouter({
             : setIntersection(selectedMob.colors, targetMob.colors).size > 0
               ? grades.partial
               : grades.incorrect,
-          mapMark: setEquals(selectedMob.mapMarks, targetMob.mapMarks)
+          mapMark: setEquals(
+            new Set(selectedMob.mapMarks.map((mapMark_) => mapMark_.name)),
+            targetMob.mapMarks,
+          )
             ? grades.correct
-            : setIntersection(selectedMob.mapMarks, targetMob.mapMarks).size > 0
+            : setIntersection(
+                  new Set(
+                    selectedMob.mapMarks.map((mapMark_) => mapMark_.name),
+                  ),
+                  targetMob.mapMarks,
+                ).size > 0
               ? grades.partial
               : grades.incorrect,
         },
