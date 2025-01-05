@@ -171,6 +171,16 @@ export const mobRouter = createTRPCRouter({
         throw new Error("Mob not found");
       }
 
+      console.log("fetched mobs", {
+        name: mobs[0].name,
+        level: mobs[0].level,
+        width: mobs[0].width,
+        height: mobs[0].height,
+        is_boss: mobs[0].is_boss,
+        colors: mobs[0].colors,
+        mapMarks: mobs[0].mapMarks,
+      });
+
       const selectedMob = {
         name: mobs[0].name,
         level: mobs[0].level,
