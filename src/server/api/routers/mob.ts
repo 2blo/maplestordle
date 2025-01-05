@@ -124,7 +124,10 @@ const getMapMarks = () => {
       "fetched map marks",
       mapMarks.map((mapMark) => mapMark.name),
     );
-    return mapMarks;
+    return mapMarks.map((mapMark) => ({
+      name: mapMark.name,
+      icon: btoa(String.fromCharCode(...mapMark.icon)),
+    }));
     // }, [Date.now().toString()]);
   }, ["map-marks"]);
 };
@@ -191,7 +194,14 @@ export const mobRouter = createTRPCRouter({
         mapMarks: mobs[0].mapMarks
           .map((name) => ({
             name: name,
-            icon: btoa(String.fromCharCode(...(mapMarks.get(name) ?? []))),
+            icon: (() => {
+              const icon = mapMarks.get(name);
+              if (!icon) {
+                console.log("map mark not found", name);
+                throw new Error("Map mark not found");
+              }
+              return icon;
+            })(),
           }))
           .filter((mapMark) => mapMark.icon),
         icon: btoa(String.fromCharCode(...mobs[0].icon)),
