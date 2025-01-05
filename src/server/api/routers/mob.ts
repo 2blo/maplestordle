@@ -119,12 +119,12 @@ const getMapMarks = () => {
       })
       .from(mapMark)
       .execute();
-    const map = new Map(
-      mapMarks.map((mapMark_) => [mapMark_.name, mapMark_.icon]),
+    console.log(
+      "fetched map marks",
+      mapMarks.map((mapMark) => mapMark.name),
     );
-    console.log("fetched map marks", mapMarks.keys());
-    return map;
-  // }, [Date.now().toString()]);
+    return mapMarks;
+    // }, [Date.now().toString()]);
   }, ["map-marks"]);
 };
 
@@ -136,8 +136,10 @@ export const mobRouter = createTRPCRouter({
       const daysSinceEpoch = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
       const targetMob = await getTargetMob(daysSinceEpoch)();
       console.log("targetMob", targetMob);
-      const mapMarks = await getMapMarks()();
-      console.log("mapMark keys", mapMarks.keys());
+      const mapMarks = new Map(
+        (await getMapMarks()()).map((mapMark) => [mapMark.name, mapMark.icon]),
+      );
+      console.log("mapMark keys", Array.from(mapMarks.keys()));
       if (!targetMob) {
         return undefined;
       }
