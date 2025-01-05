@@ -124,8 +124,8 @@ const getMapMarks = () => {
     );
     console.log("fetched map marks", mapMarks.keys());
     return map;
-  }, [Date.now().toString()]);
-  // }, ["map-marks"]);
+  // }, [Date.now().toString()]);
+  }, ["map-marks"]);
 };
 
 export const mobRouter = createTRPCRouter({
