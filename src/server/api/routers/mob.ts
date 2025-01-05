@@ -95,7 +95,8 @@ const getTargetMob = (currentDay: number) => {
       .execute();
 
     if (!targetMob[0]) {
-      return undefined;
+      console.log("target mob not found in cache function, throwing");
+      throw new Error("Failed to get target mob in cache function");
     }
     return {
       name: targetMob[0].name,
@@ -141,7 +142,8 @@ export const mobRouter = createTRPCRouter({
       );
       console.log("mapMark keys", Array.from(mapMarks.keys()));
       if (!targetMob) {
-        return undefined;
+        console.log("target mob not found, throwing");
+        throw new Error("Failed to get target mob");
       }
 
       const mobs = await ctx.db
@@ -165,7 +167,8 @@ export const mobRouter = createTRPCRouter({
         .execute();
 
       if (!mobs[0]) {
-        return undefined;
+        console.log("mob not found, throwing");
+        throw new Error("Mob not found");
       }
 
       const selectedMob = {
