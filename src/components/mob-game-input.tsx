@@ -23,7 +23,6 @@ export function MobGameInput(props: { mobs: { id: number; name: string }[] }) {
   const [open, setOpen] = useState(false);
   const [mob, setMob] = useState<{ id: number; name: string } | undefined>();
   const [mobs, setMobs] = useState<number[]>([]);
-  console.log(open);
   return (
     <div className="">
       <div className="flex flex-row justify-center gap-4">

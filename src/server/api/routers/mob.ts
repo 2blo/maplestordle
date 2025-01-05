@@ -95,7 +95,8 @@ const getTargetMob = (currentDay: number) => {
       .execute();
 
     if (!targetMob[0]) {
-      return undefined;
+      console.log("target mob not found in cache function, throwing");
+      throw new Error("Failed to get target mob in cache function");
     }
     return {
       name: targetMob[0].name,
@@ -103,8 +104,8 @@ const getTargetMob = (currentDay: number) => {
       width: targetMob[0].width,
       height: targetMob[0].height,
       is_boss: targetMob[0].is_boss,
-      colors: new Set(targetMob[0].colors),
-      mapMarks: new Set(targetMob[0].mapMarks),
+      colors: Array.from(new Set(targetMob[0].colors)),
+      mapMarks: Array.from(new Set(targetMob[0].mapMarks)),
     };
     // }, [Date.now().toString()]);
   }, ["date", currentDay.toString()]);
@@ -119,7 +120,14 @@ const getMapMarks = () => {
       })
       .from(mapMark)
       .execute();
-    return new Map(mapMarks.map((mapMark_) => [mapMark_.name, mapMark_.icon]));
+    console.log(
+      "fetched map marks",
+      mapMarks.map((mapMark) => mapMark.name),
+    );
+    return mapMarks.map((mapMark) => ({
+      name: mapMark.name,
+      icon: btoa(String.fromCharCode(...mapMark.icon)),
+    }));
     // }, [Date.now().toString()]);
   }, ["map-marks"]);
 };
@@ -132,10 +140,13 @@ export const mobRouter = createTRPCRouter({
       const daysSinceEpoch = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
       const targetMob = await getTargetMob(daysSinceEpoch)();
       console.log("targetMob", targetMob);
-      const mapMarks = await getMapMarks()();
-
+      const mapMarks = new Map(
+        (await getMapMarks()()).map((mapMark) => [mapMark.name, mapMark.icon]),
+      );
+      console.log("mapMark keys", Array.from(mapMarks.keys()));
       if (!targetMob) {
-        return undefined;
+        console.log("target mob not found, throwing");
+        throw new Error("Failed to get target mob");
       }
 
       const mobs = await ctx.db
@@ -159,8 +170,19 @@ export const mobRouter = createTRPCRouter({
         .execute();
 
       if (!mobs[0]) {
-        return undefined;
+        console.log("mob not found, throwing");
+        throw new Error("Mob not found");
       }
+
+      console.log("fetched mobs", {
+        name: mobs[0].name,
+        level: mobs[0].level,
+        width: mobs[0].width,
+        height: mobs[0].height,
+        is_boss: mobs[0].is_boss,
+        colors: mobs[0].colors,
+        mapMarks: mobs[0].mapMarks,
+      });
 
       const selectedMob = {
         name: mobs[0].name,
@@ -172,7 +194,14 @@ export const mobRouter = createTRPCRouter({
         mapMarks: mobs[0].mapMarks
           .map((name) => ({
             name: name,
-            icon: btoa(String.fromCharCode(...(mapMarks.get(name) ?? []))),
+            icon: (() => {
+              const icon = mapMarks.get(name);
+              if (!icon) {
+                console.log("map mark not found", name);
+                throw new Error("Map mark not found");
+              }
+              return icon;
+            })(),
           }))
           .filter((mapMark) => mapMark.icon),
         icon: btoa(String.fromCharCode(...mobs[0].icon)),
@@ -223,21 +252,22 @@ export const mobRouter = createTRPCRouter({
             selectedMob.is_boss === targetMob.is_boss
               ? grades.correct
               : grades.incorrect,
-          color: setEquals(selectedMob.colors, targetMob.colors)
+          color: setEquals(selectedMob.colors, new Set(targetMob.colors))
             ? grades.correct
-            : setIntersection(selectedMob.colors, targetMob.colors).size > 0
+            : setIntersection(selectedMob.colors, new Set(targetMob.colors))
+                  .size > 0
               ? grades.partial
               : grades.incorrect,
           mapMark: setEquals(
             new Set(selectedMob.mapMarks.map((mapMark_) => mapMark_.name)),
-            targetMob.mapMarks,
+            new Set(targetMob.mapMarks),
           )
             ? grades.correct
             : setIntersection(
                   new Set(
                     selectedMob.mapMarks.map((mapMark_) => mapMark_.name),
                   ),
-                  targetMob.mapMarks,
+                  new Set(targetMob.mapMarks),
                 ).size > 0
               ? grades.partial
               : grades.incorrect,

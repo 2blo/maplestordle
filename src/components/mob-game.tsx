@@ -14,7 +14,7 @@ const mobNames = unstable_cache(async () => {
     .groupBy(mob.name);
   console.log("fetched mobs", mobs);
   return mobs;
-}, ["mob-names2"]);
+}, ["mob-names"]);
 
 export async function MobGame() {
   return (
