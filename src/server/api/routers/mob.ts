@@ -103,8 +103,8 @@ const getTargetMob = (currentDay: number) => {
       width: targetMob[0].width,
       height: targetMob[0].height,
       is_boss: targetMob[0].is_boss,
-      colors: new Set(targetMob[0].colors),
-      mapMarks: new Set(targetMob[0].mapMarks),
+      colors: Array.from(new Set(targetMob[0].colors)),
+      mapMarks: Array.from(new Set(targetMob[0].mapMarks)),
     };
     // }, [Date.now().toString()]);
   }, ["date", currentDay.toString()]);
@@ -227,21 +227,22 @@ export const mobRouter = createTRPCRouter({
             selectedMob.is_boss === targetMob.is_boss
               ? grades.correct
               : grades.incorrect,
-          color: setEquals(selectedMob.colors, targetMob.colors)
+          color: setEquals(selectedMob.colors, new Set(targetMob.colors))
             ? grades.correct
-            : setIntersection(selectedMob.colors, targetMob.colors).size > 0
+            : setIntersection(selectedMob.colors, new Set(targetMob.colors))
+                  .size > 0
               ? grades.partial
               : grades.incorrect,
           mapMark: setEquals(
             new Set(selectedMob.mapMarks.map((mapMark_) => mapMark_.name)),
-            targetMob.mapMarks,
+            new Set(targetMob.mapMarks),
           )
             ? grades.correct
             : setIntersection(
                   new Set(
                     selectedMob.mapMarks.map((mapMark_) => mapMark_.name),
                   ),
-                  targetMob.mapMarks,
+                  new Set(targetMob.mapMarks),
                 ).size > 0
               ? grades.partial
               : grades.incorrect,
